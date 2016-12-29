@@ -5,20 +5,30 @@ var Game = function (config) {
     var tank = new Tank({
         context: context
     });
+    var wall = new Wall({
+        context: context
+    });
 
     var draw = function () {
+        requestAnimationFrame(draw);
+
         // clear canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // render tank
         tank.render();
+
+        // // render the wall
+        // wall.render();
     };
 
     this.run = function () {
 
-        setInterval(function () {
-            draw();
-        }, 1000 / 50);
+        // setInterval(function () {
+        //     draw();
+        // }, 1000 / 50);
+
+        draw();
 
         document.addEventListener("keydown", function (e) {
             if (e.keyCode == 39) {

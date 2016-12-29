@@ -1,11 +1,13 @@
 var Tank = function (config) {
 
+    var bullets = [];
+
     var context = config['context'],
-        blockSize = 60,
-        x = 0,
-        y = 0,
-        step = 0.2,
-        direction = 'down';
+        blockSize = 20,
+        x = 6,
+        y = 6,
+        step = 0.5,
+        direction = 'right';
 
     this.moveRight = function () {
         if (direction == 'right') {
@@ -39,62 +41,198 @@ var Tank = function (config) {
         }
     };
 
+    var isAllowShut = function () {
+
+        // if (bullets.length == 0) {
+        //     return true;
+        // }
+        //
+        // var gunCoords = {
+        //     x: 0,
+        //     y: 0
+        // };
+        // if (direction == 'up') {
+        //     gunCoords.x = blockSize * x + blockSize;
+        //     gunCoords.y = blockSize * y - blockSize - blockSize / 2;
+        // } else if (direction == 'down') {
+        //     gunCoords.x = blockSize * x + blockSize;
+        //     gunCoords.y = blockSize * y + 3 * blockSize + blockSize / 2;
+        // } else if (direction == 'left') {
+        //     gunCoords.x = blockSize * x - blockSize - blockSize / 2;
+        //     gunCoords.y = blockSize * y + blockSize;
+        // } else {
+        //     gunCoords.x = blockSize * x + 3 * blockSize + blockSize / 2;
+        //     gunCoords.y = blockSize * y + blockSize;
+        // }
+        //
+        // if (bullets[bullets.length - 1].allowShut(direction, gunCoords)) { // if last bullet near the gun
+        //     return true;
+        // }
+        // return false;
+        return true;
+    };
+
     this.shut = function () {
 
-        var _x = 0,
-            _y = 0;
+        if (isAllowShut()) {
+            var _x = 0,
+                _y = 0;
 
-        if (direction == 'up') {
-            _x = blockSize * x + 20;
-            _y = blockSize * y - 20;
-        } else if (direction == 'down') {
-            _x = blockSize * x + 20;
-            _y = blockSize * y + blockSize;
-        } else if (direction == 'left') {
-            _x = blockSize * x - 20;
-            _y = blockSize * y + 20;
-        } else {
-            _x = blockSize * x + blockSize;
-            _y = blockSize * y + 20;
-        }
+            if (direction == 'up') {
+                _x = blockSize * x + blockSize;
+                _y = blockSize * y - blockSize - blockSize / 2;
+            } else if (direction == 'down') {
+                _x = blockSize * x + blockSize;
+                _y = blockSize * y + 3 * blockSize + blockSize / 2;
+            } else if (direction == 'left') {
+                _x = blockSize * x - blockSize - blockSize / 2;
+                _y = blockSize * y + blockSize;
+            } else {
+                _x = blockSize * x + 3 * blockSize + blockSize / 2;
+                _y = blockSize * y + blockSize;
+            }
 
-        var bullet = new Bullet({
-            context: context,
-            x: _x,
-            y: _y,
-            direction: direction
-        });
+            var bullet = new Bullet({
+                context: context,
+                x: _x,
+                y: _y,
+                direction: direction
+            });
 
-        setInterval(function () {
             bullet.render();
-        }, 1000 / 100);
+
+            bullets.push(bullet);
+        }
     };
 
     this.render = function () {
-        context.beginPath();
-        if (direction == 'up') {
-            context.rect(blockSize * x, blockSize * y + 10, blockSize, blockSize - 10);
-        } else if (direction == 'down') {
-            context.rect(blockSize * x, blockSize * y, blockSize, blockSize - 10);
-        } else if (direction == 'left') {
-            context.rect(blockSize * x + 10, blockSize * y, blockSize - 10, blockSize);
-        } else {
-            context.rect(blockSize * x, blockSize * y, blockSize - 10, blockSize);
+
+        for (var i = 0; i < bullets.length; i++) {
+            if (bullets[i].isOutOfRange()) {
+                bullets.splice(i, 1);
+            }
         }
-        context.fillStyle = '#008800';
-        context.fill();
-        context.closePath();
+
+        if (direction == 'up') {
+            // draw left wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x, blockSize * y + blockSize, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x, blockSize * y + 2 * blockSize, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+
+            // draw body
+            context.beginPath();
+            context.rect(blockSize * x + blockSize, blockSize * y, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + 2 * blockSize, blockSize, blockSize - 1);
+            context.fillStyle = '#008800';
+            context.fill();
+            context.closePath();
+
+            // draw right wheel
+            context.beginPath();
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y + blockSize, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y + 2 * blockSize, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+        } else if (direction == 'down') {
+            // draw left wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x, blockSize * y + blockSize, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x, blockSize * y + 2 * blockSize, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+
+            // draw body
+            context.beginPath();
+            context.rect(blockSize * x + blockSize, blockSize * y, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + 2 * blockSize, blockSize, blockSize - 1);
+            context.fillStyle = '#008800';
+            context.fill();
+            context.closePath();
+
+            // draw right wheel
+            context.beginPath();
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y + blockSize, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + 2 * blockSize + 1, blockSize * y + 2 * blockSize, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+        } else if (direction == 'left') {
+            // draw left wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + blockSize, blockSize * y, blockSize, blockSize - 1);
+            context.rect(blockSize * x + blockSize * 2 + 1, blockSize * y, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+
+            // draw body
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize * 2, blockSize * y + blockSize, blockSize, blockSize);
+            context.fillStyle = '#008800';
+            context.fill();
+            context.closePath();
+
+            // draw right wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y + 2 * blockSize + 1, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + blockSize, blockSize * y + 2 * blockSize + 1, blockSize, blockSize - 1);
+            context.rect(blockSize * x + blockSize * 2 + 1, blockSize * y + 2 * blockSize + 1, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+        } else {
+            // draw left wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + blockSize, blockSize * y, blockSize, blockSize - 1);
+            context.rect(blockSize * x + blockSize * 2 + 1, blockSize * y, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+
+            // draw body
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize, blockSize * y + blockSize, blockSize, blockSize);
+            context.rect(blockSize * x + blockSize * 2, blockSize * y + blockSize, blockSize, blockSize);
+            context.fillStyle = '#008800';
+            context.fill();
+            context.closePath();
+
+            // draw right wheel
+            context.beginPath();
+            context.rect(blockSize * x, blockSize * y + 2 * blockSize + 1, blockSize - 1, blockSize - 1);
+            context.rect(blockSize * x + blockSize, blockSize * y + 2 * blockSize + 1, blockSize, blockSize - 1);
+            context.rect(blockSize * x + blockSize * 2 + 1, blockSize * y + 2 * blockSize + 1, blockSize - 1, blockSize - 1);
+            context.fillStyle = '#000000';
+            context.fill();
+            context.closePath();
+        }
 
         // draw gun
         context.beginPath();
         if (direction == 'up') {
-            context.rect(blockSize * x + 20, blockSize * y, 20, 10);
+            context.rect(blockSize * x + blockSize, blockSize * y - blockSize / 2, blockSize, blockSize / 2);
         } else if (direction == 'down') {
-            context.rect(blockSize * x + 20, (blockSize * y + blockSize) - 10, 20, 10);
+            context.rect(blockSize * x + blockSize, blockSize * y + 3 * blockSize, blockSize, blockSize / 2);
         } else if (direction == 'left') {
-            context.rect(blockSize * x, blockSize * y + 20, 10, 20);
+            context.rect(blockSize * x - blockSize / 2, blockSize * y + blockSize, blockSize / 2, blockSize);
         } else {
-            context.rect((blockSize * x + blockSize) - 10, blockSize * y + 20, 10, 20);
+            context.rect(blockSize * x + 3 * blockSize, blockSize * y + blockSize, blockSize / 2, blockSize);
         }
         context.fillStyle = '#FF0000';
         context.fill();
