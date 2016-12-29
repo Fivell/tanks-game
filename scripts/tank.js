@@ -1,13 +1,32 @@
 var Tank = function (config) {
 
-    var bullets = [];
+    var self = this;
 
-    var context = config['context'],
+    document.addEventListener("keydown", function (e) {
+        if (e.keyCode == 39) {
+            self.moveRight();
+        }
+        else if (e.keyCode == 37) {
+            self.moveLeft();
+        }
+        else if (e.keyCode == 38) {
+            self.moveUp();
+        }
+        else if (e.keyCode == 40) {
+            self.moveDown();
+        } else if (e.keyCode == 32) {
+            self.shut();
+        }
+    });
+
+    // var bullets = [];
+
+    var context = window.canvasContext,
         blockSize = 20,
-        x = 6,
-        y = 6,
+        x = config['x'] || 6,
+        y = config['y'] || 6,
         step = 0.5,
-        direction = 'right';
+        direction = config['direction'] || 'right';
 
     this.moveRight = function () {
         if (direction == 'right') {
@@ -92,26 +111,40 @@ var Tank = function (config) {
                 _y = blockSize * y + blockSize;
             }
 
-            var bullet = new Bullet({
-                context: context,
-                x: _x,
-                y: _y,
-                direction: direction
-            });
+            // var bullet = new Bullet({
+            //     context: context,
+            //     x: _x,
+            //     y: _y,
+            //     direction: direction
+            // });
+            //
+            // bullet.render();
 
-            bullet.render();
+            window.app.gameObjects.push(
+                new Bullet({
+                    context: context,
+                    x: _x,
+                    y: _y,
+                    direction: direction
+                })
+            );
 
-            bullets.push(bullet);
+            // bullets.push(bullet);
         }
+    };
+
+    this.isOutOfRange = function () {
+        return false;
     };
 
     this.render = function () {
 
-        for (var i = 0; i < bullets.length; i++) {
-            if (bullets[i].isOutOfRange()) {
-                bullets.splice(i, 1);
-            }
-        }
+        // // remove bullets to speed up the game
+        // for (var i = 0; i < bullets.length; i++) {
+        //     if (bullets[i].isOutOfRange()) {
+        //         bullets.splice(i, 1);
+        //     }
+        // }
 
         if (direction == 'up') {
             // draw left wheel

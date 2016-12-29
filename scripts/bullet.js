@@ -5,18 +5,23 @@ var Bullet = function (config) {
         y = config['y'],
         direction = config['direction'];
 
+    this.moving = setInterval(function () {
+        if (direction == 'up') {
+            y -= 10;
+        } else if (direction == 'down') {
+            y += 10;
+        } else if (direction == 'left') {
+            x -= 10;
+        } else {
+            x += 10;
+        }
+    }, 50);
+
+    // move the bullet
+
+
     var draw = function () {
         requestAnimationFrame(draw);
-
-        if (direction == 'up') {
-            y -= 2;
-        } else if (direction == 'down') {
-            y += 2;
-        } else if (direction == 'left') {
-            x -= 2;
-        } else {
-            x += 2;
-        }
 
         context.beginPath();
         context.rect(x + 1, y + 1, 18, 18);
